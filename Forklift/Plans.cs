@@ -189,13 +189,10 @@ namespace Forklift
     public class LookupPart : SubPart
     {
         public string LookupColumn { get; set; }
-        public ColumnMeta PrimaryKey { get; set; }
-        public string ForeignKey { get; set; }
-        public string ParentTable { get; set; }
 
         public static IEnumerable<PlanPart> Parse(string text)
         {
-            var match = Regex.Match(text, @"([^:]+)(?::([^\s]+))?(?:\s(.+))?");
+            var match = Regex.Match(text, @"([^:\s]+)(?::([^\s]+))?(?:\s(.+))?");
 
             if (match.Success)
             {
@@ -225,22 +222,16 @@ namespace Forklift
 
         protected override void FillIn(PlanPart parent, UpdateContext context)
         {
-            //if (String.IsNullOrEmpty(ForeignKey)) ForeignKey = "ForeignKey!"; // TODO: ElementName + PrimaryKey(TableName) (we can even check if the parent table has this column)
-            //if (String.IsNullOrEmpty(LookupColumn)) LookupColumn = "LookupColumn!"; // TODO: ForeignKey - PrimaryKey (isn't this just probably elementName)
+            base.FillIn(parent, context);
 
-            var table = context.Metabase.Table(TableName);
-            PrimaryKey = table.PrimaryKey;
-            ParentTable = parent.TableName;
+            if (String.IsNullOrEmpty(LookupColumn)) LookupColumn = new[] { 
+                "Code", "Name"
+            }.FirstOrDefault(x => Columns.Any(y => String.Equals(y.Name, x, StringComparison.CurrentCultureIgnoreCase)));
+
             Columns = Columns.Where(x => String.Equals(LookupColumn, x.Name, StringComparison.CurrentCultureIgnoreCase)).ToArray();
         }
 
-        protected override string WhereClause()
-        {
-            return String.Format("WHERE {0}.{1} = {2}.{3}",
-                TableName, PrimaryKey.Name,
-                ParentTable, ForeignKey
-            );
-        }
+
 
     }
 
@@ -266,6 +257,21 @@ namespace Forklift
                 yield return new HasManyPart { TableName = text.ToTableName(), ElementName = elementName };
         }
 
+        protected override void FillIn(PlanPart parent, UpdateContext context)
+        {
+            if (String.IsNullOrWhiteSpace(ForeignKey)) ForeignKey = parent.Table.Name + parent.Table.PrimaryKey.Name;
+
+            base.FillIn(parent, context);
+        }
+
+        protected override string WhereClause()
+        {
+            return String.Format("WHERE {0}.{1} = {2}.{3}",
+                Table.Name, ForeignKey,
+                ParentTable.Name, ParentTable.PrimaryKey.Name
+            );
+        }
+
         //	public override string ToQuery()
         //	{
         //		return "/* Has Many " + TableName + " called " + ElementName + " */";
@@ -275,6 +281,24 @@ namespace Forklift
 
     public abstract class SubPart : PlanPart
     {
+        public TableMeta ParentTable { get; protected set; }
+        public string ForeignKey { get; protected set; }
+
+        protected override void FillIn(PlanPart parent, UpdateContext context)
+        {
+            ParentTable = parent.Table;
+
+            if (String.IsNullOrEmpty(ForeignKey)) ForeignKey = ElementName + Table.PrimaryKey.Name;
+        }
+
+        protected override string WhereClause()
+        {
+            return String.Format("WHERE {0}.{1} = {2}.{3}",
+                Table.Name, Table.PrimaryKey.Name,
+                ParentTable.Name, ForeignKey
+            );
+        }
+
         protected override string QueryTemplate()
         {
             return "(" + base.QueryTemplate() + ")";
@@ -292,6 +316,7 @@ namespace Forklift
 
         public string TableName { get; protected set; }
         public string ElementName { get; protected set; }
+        public TableMeta Table { get; private set; }
         public ColumnMeta[] Columns { get; protected set; }
         public PlanPart[] Children { get; protected set; }
 
@@ -336,7 +361,8 @@ FOR XML AUTO, {4}";
         public void Update(PlanPart parent, UpdateContext context)
         {
             //Console.WriteLine("Updating {0}", TableName);
-            Columns = context.Metabase.Table(TableName).Columns;
+            Table = context.Metabase.Table(TableName);
+            Columns = Table.Columns;
             FillIn(parent, context);
             foreach (var child in Children)
                 child.Update(this, context);

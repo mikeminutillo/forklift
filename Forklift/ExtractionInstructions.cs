@@ -37,6 +37,7 @@ namespace Forklift
             Func<PlanPart, XElement> converter = p => 
                 {
                     var query = p.ToQuery();
+                    Console.WriteLine(query);
                     var results = runner(query); // TODO: Add the query clause
                     return String.IsNullOrWhiteSpace(results) ? null : XElement.Parse(results);
                 };
