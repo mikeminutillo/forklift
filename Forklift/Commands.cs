@@ -12,13 +12,15 @@ namespace Forklift
 
     public abstract class CommandBase : ICommand
     {
+        private Lazy<PlanFile> _planFile;
+
+        public PlanFile Plans { get { return _planFile.Value; } }
+        public string ExtractFile { get; private set; }
+
         public void Run(Args args)
         {
-            var planFile = args.Option("plan", "forklift.plan");
-            var extractFile = args.Option("extract", "extract.xml");
-
-            Console.WriteLine("Plan:    {0}", planFile);
-            Console.WriteLine("Extract: {0}", extractFile);
+            _planFile = new Lazy<PlanFile>(() => PlanFile.Load(args.Option("plan", "forklift.plan")));
+            ExtractFile = args.Option("extract", "extract.xml");
 
             RunCore(args);
         }
@@ -28,7 +30,6 @@ namespace Forklift
 
     public class PushCommand : CommandBase
     {
-
         protected override void RunCore(Args args)
         {
             Console.WriteLine("Pushing");
@@ -40,6 +41,7 @@ namespace Forklift
         protected override void RunCore(Args args)
         {
             Console.WriteLine("Pulling");
+            Plans.Environment("RAVS");
         }
     }
 
@@ -56,7 +58,7 @@ namespace Forklift
 
         public static ICommand Find(string name)
         {
-            var type = All[name].FirstOrDefault();
+            var type = All[name.ToLower()].FirstOrDefault();
             if (type == null)
                 return null;
 
