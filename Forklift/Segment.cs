@@ -44,7 +44,7 @@ namespace Forklift
                     continue;
                 }
 
-                var segment = new Segment(text);
+                var segment = new Segment(text.Trim());
 
                 var indent = whiteSpace.Length;
 

@@ -53,15 +53,15 @@ namespace Forklift
             using (var context = new DataContext(environment.ConnectionString))
             {
                 var metabase = new ContextMetabase(context);
-                foreach (var extraction in extractions)
-                    Plans.Plan(extraction.ExtractName).UpdateAndCheck(metabase);
-                
-                //new XElement("Extract", 
-                //    extractions.Select(
-                //        x => Plans.Plan(x.ExtractName).Run(context, x.IdsToExtract)).Where(x => x != null)
-                //    ).Save(ExtractFile);
-                // Run the extracts
-                // Save the extract file
+
+                foreach(var extraction in extractions)
+                    extraction.Plan = Plans.Plan(extraction.ExtractName).GetPlan(metabase);
+
+                Func<string, string> executeQuery = q => String.Join("", context.ExecuteQuery<string>(q));
+
+                new XElement("Extract",
+                    extractions.Select(x => x.Run(executeQuery))
+                ).Save(ExtractFile);
             }
         }
     }
