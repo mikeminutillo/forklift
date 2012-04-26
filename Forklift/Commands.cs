@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.Linq;
+using System.Xml.Linq;
 
 namespace Forklift
 {
@@ -40,8 +42,27 @@ namespace Forklift
     {
         protected override void RunCore(Args args)
         {
-            Console.WriteLine("Pulling");
-            Plans.Environment("RAVS");
+            var environmentName = args.Arguments.Skip(1).FirstOrDefault();
+            var extractions = ExtractionInstructions.Parse(args.Arguments.Skip(2).ToArray());
+
+            if (environmentName == null)
+                throw new Exception("You need to specify an environment");
+
+            var environment = Plans.Environment(environmentName);
+
+            using (var context = new DataContext(environment.ConnectionString))
+            {
+                var metabase = new ContextMetabase(context);
+                foreach (var extraction in extractions)
+                    Plans.Plan(extraction.ExtractName).UpdateAndCheck(metabase);
+                
+                //new XElement("Extract", 
+                //    extractions.Select(
+                //        x => Plans.Plan(x.ExtractName).Run(context, x.IdsToExtract)).Where(x => x != null)
+                //    ).Save(ExtractFile);
+                // Run the extracts
+                // Save the extract file
+            }
         }
     }
 

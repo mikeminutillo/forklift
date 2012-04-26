@@ -17,6 +17,11 @@ namespace Forklift
     {
         public string Name { get; set; }
         public Segment[] Segments { get; set; }
+
+        public void UpdateAndCheck(IMetabase metabase)
+        {
+            // Load the Plans from the Segments
+        }
     }
 
     public class PlanFile
