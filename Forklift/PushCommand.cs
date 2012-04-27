@@ -30,7 +30,8 @@ namespace Forklift
 
                 foreach (var extraction in extractions)
                     extraction.Insert(metabase, extract);
-                //scope.Complete();
+                
+                scope.Complete();
             }
         }
     }
