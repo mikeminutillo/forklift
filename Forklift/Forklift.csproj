@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,13 +45,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Args.cs" />
+    <Compile Include="CommandBase.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="ContextMetabase.cs" />
+    <Compile Include="Env.cs" />
     <Compile Include="ExtractionInstructions.cs" />
-    <Compile Include="Metabase.cs" />
-    <Compile Include="Plans.cs" />
+    <Compile Include="HasManyPart.cs" />
+    <Compile Include="HasOnePart.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="IMetabase.cs" />
+    <Compile Include="ColumnMeta.cs" />
+    <Compile Include="LookupPart.cs" />
+    <Compile Include="Plan.cs" />
+    <Compile Include="PlanFile.cs" />
+    <Compile Include="PlanPart.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PullCommand.cs" />
+    <Compile Include="PushCommand.cs" />
+    <Compile Include="RootPlanPart.cs" />
     <Compile Include="Segment.cs" />
+    <Compile Include="SubPart.cs" />
+    <Compile Include="TableMeta.cs" />
+    <Compile Include="UpdateContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

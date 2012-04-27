@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 namespace Forklift
 {
-    class ExtractionInstructions
+    public class ExtractionInstructions
     {
         public string ExtractName { get; set; }
         public string[] IdsToExtract { get; set; }
@@ -32,17 +30,26 @@ namespace Forklift
                     }).ToArray();
         }
 
-        public XElement Run(Func<string, string> runner)
+        public XElement Run(IMetabase metabase)
         {
-            Func<PlanPart, XElement> converter = p => 
-                {
-                    var query = p.ToQuery();
-                    Console.WriteLine(query);
-                    var results = runner(query); // TODO: Add the query clause
-                    return String.IsNullOrWhiteSpace(results) ? null : XElement.Parse(results);
-                };
+            var query = Plan.ToQuery(); 
+            Console.WriteLine(query); // For debugging purposes
+            return metabase.Query<string>(query).AsXElement();
+        }
 
-            return converter(Plan);
+        public void Update(IMetabase metabase, PlanFile plans)
+        {
+            var updateContext = new UpdateContext {Instructions = this, Metabase = metabase};
+            var plan = plans.Plan(ExtractName);
+            ExtractName = plan.Name;
+            Plan = plan.GetPlan(updateContext);
+        }
+
+        public void Insert(IMetabase metabase, XElement extract)
+        {
+            var extractElement = extract.Element(ExtractName);
+            if (extractElement != null)
+                Plan.Process(extractElement, metabase, null);
         }
     }
 }
