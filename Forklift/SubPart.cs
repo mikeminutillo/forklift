@@ -46,8 +46,9 @@ namespace Forklift
 
             //Console.WriteLine("Updating {0}.{1} to have value: {2}", ParentTable.Name, ForeignKey, column.Stringify(key));
 
-            Console.WriteLine("Adding: {0} = {1}", ForeignKey, column.Stringify(key));
-            parentValues[ForeignKey] = column.Stringify(key);
+            //Console.WriteLine("Adding: {0} = {1}", ForeignKey, column.Stringify(key));
+            if (key != null)
+                parentValues[column.Name] = column.Stringify(key);
         }
     }
 }

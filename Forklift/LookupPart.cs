@@ -71,10 +71,10 @@ namespace Forklift
         protected override void UpdateParentValues(IDictionary<string, object> parentValues, object key)
         {
             var canBeInlined = CanBeInlined();
-            Console.WriteLine("LOOKUP: {0} {1}", TableName, canBeInlined);
+            //Console.WriteLine("LOOKUP: {0} {1}", TableName, canBeInlined);
             if(canBeInlined)
             {
-                Console.WriteLine("Removing {0}", ElementName);
+                //Console.WriteLine("Removing {0}", ElementName);
                 parentValues.Remove(ElementName);
             }
             base.UpdateParentValues(parentValues, key);
@@ -82,8 +82,11 @@ namespace Forklift
 
         protected override object PushSelf(IMetabase metabase, IDictionary<string, object> values)
         {
+            if (values.Any() == false)
+                return null;
             var value = metabase.Lookup(Table.Name, values);
-            Console.WriteLine("Looked up: {0}", value);
+            values[Table.PrimaryKey.Name] = value;
+            //Console.WriteLine("Looked up: {0}", value);
             return value;
         }
 

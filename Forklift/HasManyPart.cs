@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Forklift
@@ -46,6 +47,16 @@ namespace Forklift
         protected override void UpdateParentValues(IDictionary<string, object> parentValues, object key)
         {
             // HasMany does not update the parent values
+        }
+        
+        protected override void UpdateFromParentValues(IDictionary<string, object> myValues, IDictionary<string, object> parentValues)
+        {
+            base.UpdateFromParentValues(myValues, parentValues);
+
+            var parentValue = parentValues[ParentTable.PrimaryKey.Name];
+
+            myValues[ForeignKey] = parentValue;
+
         }
     }
 }

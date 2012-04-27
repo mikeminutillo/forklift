@@ -29,11 +29,11 @@ namespace Forklift
                             let c = Columns.SingleOrDefault(x => x.IsNamed(v.Key))
                             select new {c, v}).ToArray();
 
-            Console.WriteLine("I*** {0} ***", Name);
-            foreach (var param in @params1)
-            {
-                Console.WriteLine("I: {0}: {1}", param.c == null ? null : param.c.Name, param.v);
-            }
+            //Console.WriteLine("I*** {0} ***", Name);
+            //foreach (var param in @params1)
+            //{
+            //    Console.WriteLine("I: {0}: {1}", param.c == null ? null : param.c.Name, param.v);
+            //}
 
             var @params = (from a in @params1
                            where a.c.Insertable()
@@ -56,11 +56,11 @@ namespace Forklift
                            let c = Columns.SingleOrDefault(x => x.IsNamed(v.Key))
                            select new {c, v}).ToArray();
 
-            Console.WriteLine("L*** {0} ***", Name);
-            foreach (var param in @params1)
-            {
-                Console.WriteLine("L: {0}: {1}", param.c == null ? null : param.c.Name, param.v);
-            }
+            //Console.WriteLine("L*** {0} ***", Name);
+            //foreach (var param in @params1)
+            //{
+            //    Console.WriteLine("L: {0}: {1}", param.c == null ? null : param.c.Name, param.v);
+            //}
 
             var @params = (from a in @params1
                            where a.c.Insertable()
@@ -69,6 +69,8 @@ namespace Forklift
                                           Column = "[" + a.c.Name + "]",
                                           Value = a.c.Stringify(a.v.Value)
                                       }).ToArray();
+            //if (@params.Length == 0)
+            //    throw new Exception("NO! " + Name);
 
             return String.Format("SELECT [{0}] FROM [{1}] WHERE {2};",
                                  PrimaryKey.Name, Name, String.Join(" AND ", @params.Select(x => String.Format("{0} = {1}", x.Column, x.Value)))

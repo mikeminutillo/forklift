@@ -109,11 +109,17 @@ FOR XML AUTO, {4}";
 
         }
 
+        protected virtual void UpdateFromParentValues(IDictionary<string, object> myValues, IDictionary<string, object> parentValues)
+        {
+
+        }
+
         public void Process(XElement parent, IMetabase metabase, IDictionary<string, object> parentValues)
         {
             foreach(var element in GetElements(parent))
             {
                 var values = GetValues(element);
+                UpdateFromParentValues(values, parentValues);
 
                 foreach (var lookup in Children.OfType<LookupPart>())
                     lookup.Process(element, metabase, values);
