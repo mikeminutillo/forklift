@@ -23,7 +23,7 @@ namespace Forklift
         {
             return String.Format("WHERE [{0}].[{1}] = [{2}].[{3}]",
                                  ElementName, Table.PrimaryKey.Name,
-                                 ParentTable.Name, ForeignKey
+                                 ParentElementName, ForeignKey
                 );
         }
 
