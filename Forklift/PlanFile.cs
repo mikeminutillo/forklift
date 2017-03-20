@@ -99,7 +99,7 @@ namespace Forklift
                         continue;
                     }
 
-                    var match = Regex.Match(line, @"^(.+):(.+)$");
+                    var match = Regex.Match(line, @"^(.+?):(.+)$");
                     if (!match.Success)
                         throw new Exception(String.Format("Plan file must start with environments in 'name:connectionstring' format (without quotes). '{0}' does not match", line));
 

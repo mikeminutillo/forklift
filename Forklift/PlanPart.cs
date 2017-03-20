@@ -81,7 +81,7 @@ FOR XML AUTO, {4}";
             Table = context.Metabase.Table(TableName);
             Columns = Table.Columns;
             Ignore(Columns.Where(x => x.Insertable() ==false).Select(x => x.Name).ToArray());
-            Ignore(Table.PrimaryKey);
+            //Ignore(Table.PrimaryKey);
             FillIn(parent, context);
             foreach (var child in Children)
                 child.Update(this, context);
