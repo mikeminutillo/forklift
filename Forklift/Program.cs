@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Forklift
@@ -37,11 +38,17 @@ namespace Forklift
                 ShowUsageAndExit(-3);
             }
 
+            if (Debugger.IsAttached)
+                Console.ReadLine();
+
         }
 
         private static void ShowUsageAndExit(int p)
         {
             Console.WriteLine("USAGE: forklift.exe <command> <command args> [<options>]");
+
+            if (Debugger.IsAttached)
+                Console.ReadLine();
             Environment.Exit(p);
         }
     }
