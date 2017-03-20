@@ -37,11 +37,14 @@ namespace Forklift
 
             switch (Type)
             {
+                case "uniqueidentifier":
                 case "nvarchar":
                 case "varchar":
                     return "'" + String.Format("{0}", o).Replace("'", "''") + "'";
                 case "datetime":
                     return "'" + Convert.ToDateTime(o).ToString("yyyy-MM-dd HH:mm:ss") + "'";
+                case "datetimeoffset":
+                    return "'" + o + "'";
                 default:
                     return String.Format("{0}", o);
             }
